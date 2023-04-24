@@ -1,0 +1,6 @@
+*.out
+batchscript*
+llama_model
+output
+.vscode
+.ipynb*

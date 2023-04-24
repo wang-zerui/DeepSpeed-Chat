@@ -1,0 +1,1 @@
+srun -p nlp --gres=gpu:1 python ./inference/chatbot.py --path /mnt/petrelfs/wangzerui/DeepSpeed/DeepSpeedExamples/applications/DeepSpeed-Chat/output/step3-models/1.3b/actor --max_new_tokens 128
