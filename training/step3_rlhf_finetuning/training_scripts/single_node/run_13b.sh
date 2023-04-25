@@ -19,20 +19,19 @@ if [ "$CRITIC_ZERO_STAGE" == "" ]; then
 fi
 mkdir -p $OUTPUT
 
-Num_Padding_at_Beginning=1 # this is model related
 
 Actor_Lr=5e-4
 Critic_Lr=5e-6
 
 deepspeed --master_port 12346 main.py \
-   --data_path Dahoas/rm-static Dahoas/full-hh-rlhf Dahoas/synthetic-instruct-gptj-pairwise yitingxie/rlhf-reward-datasets openai/webgpt_comparisons stanfordnlp/SHP \
+   --data_path Dahoas/rm-static  \
    --data_split 2,4,4 \
    --actor_model_name_or_path $ACTOR_MODEL_PATH \
    --critic_model_name_or_path $CRITIC_MODEL_PATH \
    --num_padding_at_beginning 1 \
-   --per_device_train_batch_size 16 \
-   --per_device_mini_train_batch_size 16 \
-   --generation_batch_numbers 1 \
+   --per_device_train_batch_size 1 \
+   --per_device_mini_train_batch_size 1 \
+   --generation_batch_numbers 4 \
    --ppo_epochs 1 \
    --max_answer_seq_len 256 \
    --max_prompt_seq_len 256 \
@@ -45,12 +44,10 @@ deepspeed --master_port 12346 main.py \
    --gradient_accumulation_steps 1 \
    --num_warmup_steps 100 \
    --deepspeed --seed 1234 \
-   --enable_hybrid_engine \
-   --inference_tp_size 2 \
-   --actor_zero_stage $ACTOR_ZERO_STAGE \
-   --critic_zero_stage $CRITIC_ZERO_STAGE \
+   --offload_reference_model \
+   --actor_zero_stage 2 \
+   --critic_zero_stage 2 \
+   --critic_gradient_checkpointing \
    --actor_gradient_checkpointing \
-   --actor_lora_dim 128 \
-   --actor_lora_module_name decoder.layers. \
    --output_dir $OUTPUT \
     &> $OUTPUT/training.log

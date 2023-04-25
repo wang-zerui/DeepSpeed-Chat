@@ -202,7 +202,9 @@ def main():
     print('using llamatokenizer')
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path,
                                               fast_tokenizer=True)
-    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token_id = (
+        0  # unk. we want this to be different from the eos token
+    )
 
     rm_model = create_critic_model(args.model_name_or_path, tokenizer,
                                    ds_config, args.num_padding_at_beginning)
@@ -255,8 +257,8 @@ def main():
             scores += outputs["chosen_mean_scores"].mean().float()
             if step == 99:  # For faster evaluation and debugging
                 break
-            acc = correct_predictions / total_predictions
-            scores = scores / (step + 1)
+        acc = correct_predictions / total_predictions
+        scores = scores / (step + 1)
         try:
             acc = get_all_reduce_mean(acc).item()
             scores = get_all_reduce_mean(scores).item()

@@ -13,8 +13,9 @@ if [ "$ZERO_STAGE" == "" ]; then
 fi
 mkdir -p $OUTPUT
 
+# 一定要加上--gradient_checkpointing --zero_stage 3 \
 deepspeed main.py \
-   --data_path Dahoas/rm-static  \
+   --data_path Dahoas/rm-static  Dahoas/full-hh-rlhf Dahoas/synthetic-instruct-gptj-pairwise yitingxie/rlhf-reward-datasets openai/webgpt_comparisons stanfordnlp/SHP   \
    --data_split 2,4,4 \
    --model_name_or_path /mnt/petrelfs/wangzerui/DeepSpeed/DeepSpeedExamples/applications/DeepSpeed-Chat/llama_model/7132k \
    --num_padding_at_beginning 1 \
@@ -28,7 +29,8 @@ deepspeed main.py \
    --lr_scheduler_type cosine \
    --num_warmup_steps 0 \
    --seed 1234 \
-   --zero_stage $ZERO_STAGE \
+   --gradient_checkpointing \
+   --zero_stage 3 \
    --deepspeed \
    --output_dir $OUTPUT \
    &> $OUTPUT/training.log

@@ -14,13 +14,13 @@ fi
 mkdir -p $OUTPUT
 
 deepspeed main.py \
-   --data_path Dahoas/rm-static Dahoas/full-hh-rlhf Dahoas/synthetic-instruct-gptj-pairwise yitingxie/rlhf-reward-datasets openai/webgpt_comparisons stanfordnlp/SHP \
+   --data_path Dahoas/rm-static  \
    --data_split 2,4,4 \
-   --model_name_or_path facebook/opt-13b \
-   --per_device_train_batch_size 4 \
-   --per_device_eval_batch_size 4 \
+   --model_name_or_path /mnt/petrelfs/wangzerui/DeepSpeed/DeepSpeedExamples/applications/DeepSpeed-Chat/llama_model/7132k \
+   --per_device_train_batch_size 6 \
+   --per_device_eval_batch_size 6 \
    --max_seq_len 512 \
-   --learning_rate 1e-4 \
+   --learning_rate 9.65e-6 \
    --weight_decay 0.1 \
    --num_train_epochs 2  \
    --gradient_accumulation_steps 1 \
@@ -29,8 +29,6 @@ deepspeed main.py \
    --seed 1234 \
    --gradient_checkpointing \
    --zero_stage $ZERO_STAGE \
-   --lora_dim 128 \
-   --lora_module_name decoder.layers. \
    --deepspeed \
    --output_dir $OUTPUT \
    &> $OUTPUT/training.log

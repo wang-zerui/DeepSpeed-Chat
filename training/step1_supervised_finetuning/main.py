@@ -168,23 +168,22 @@ def parse_args():
 
 def main():
     args = parse_args()
-    args.world_size = int(os.environ["WORLD_SIZE"])
-    ngpus_per_node = torch.cuda.device_count()
+    # args.world_size = int(os.environ["WORLD_SIZE"])
+    # ngpus_per_node = torch.cuda.device_count()
     
-    args.rank = int(os.environ['SLURM_PROCID'])
-    print(args.rank)
-    torch.distributed.init_process_group(backend='nccl', init_method='env://',
-                                world_size=args.world_size, rank=args.rank)
-    device = torch.device("cuda", args.rank % ngpus_per_node)
-    # if args.local_rank == -1:
-    #     device = torch.device("cuda")
-    # else:
-    #     torch.cuda.set_device(args.local_rank)
-    #     device = torch.device("cuda", args.local_rank)
-    #     # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
-    #     torch.distributed.init_process_group(backend='nccl')
-    #     deepspeed.init_distributed()
-    print(22222222)
+    # args.rank = int(os.environ['SLURM_PROCID'])
+    # print(args.rank)
+    # torch.distributed.init_process_group(backend='nccl', init_method='env://',
+    #                             world_size=args.world_size, rank=args.rank)
+    # device = torch.device("cuda", args.rank % ngpus_per_node)
+    if args.local_rank == -1:
+        device = torch.device("cuda")
+    else:
+        torch.cuda.set_device(args.local_rank)
+        device = torch.device("cuda", args.local_rank)
+        # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
+        # torch.distributed.init_process_group(backend='nccl')
+        deepspeed.init_distributed()
 
     args.global_rank = torch.distributed.get_rank()
 

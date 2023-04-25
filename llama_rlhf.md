@@ -1,8 +1,9 @@
 srun -p nlp --gres=gpu:8 --async python train.py \
---step=2 \
---actor-model=7b \
+--step=3 \
+--actor-model=13b \
 --reward-model=13b \
---actor-zero-stage=3 \
+--actor-zero-stage=2 \
+--reward-zero-stage=2 \
 --num-gpus=8
 
 python train.py \

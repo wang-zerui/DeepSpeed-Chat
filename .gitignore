@@ -4,3 +4,4 @@ llama_model
 output
 .vscode
 .ipynb*
+**__pycache__**
