@@ -281,6 +281,9 @@ def parse_args():
     parser.add_argument('--enable_ema',
                         action='store_true',
                         help='Enable EMA checkpoint for the model.')
+    parser.add_argument('--multinode',
+                        action='store_true',
+                        help='Enable EMA checkpoint for the model.')
 
     parser = deepspeed.add_config_arguments(parser)
     args = parser.parse_args()
@@ -351,6 +354,9 @@ def create_datasets(args, tokenizer, train_phase=3):
 def main():
     #region 初始化环境
     args = parse_args()
+    if args.multinode:
+        print("using multinode")
+        args.local_rank = int(os.environ['LOCAL_RANK'])
     if args.local_rank == -1:
         device = torch.device("cuda")
     else:
@@ -412,7 +418,7 @@ def main():
     #endregion
     
     #region RLHF
-
+    torch.cuda.empty_cache()
     for epoch in range(args.num_train_epochs):
         print_rank_0(
             f"Beginning of Epoch {epoch+1}/{args.num_train_epochs}, Total Generation Batches {min(len(prompt_train_dataloader), len(unsupervised_train_dataloader))}",

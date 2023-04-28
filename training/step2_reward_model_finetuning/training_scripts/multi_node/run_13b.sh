@@ -1,8 +1,14 @@
 #!/bin/bash
-# Copyright (c) Microsoft Corporation.
-# SPDX-License-Identifier: Apache-2.0
+#SBATCH --job-name=16card
+#SBATCH --partition=nlp
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=1
+#SBATCH --gres=gpu:8
+#SBATCH --output=output/step3-models/13b/multinode.log
 
-# DeepSpeed Team
+MASTER_PORT=30123
+RDV_ADDR=$(hostname)
+WORLD_SIZE=$SLURM_JOB_NUM_NODES
 OUTPUT=$1
 ZERO_STAGE=$2
 if [ "$OUTPUT" == "" ]; then
@@ -13,8 +19,13 @@ if [ "$ZERO_STAGE" == "" ]; then
 fi
 mkdir -p $OUTPUT
 
-# 一定要加上--gradient_checkpointing --zero_stage 3 \
-deepspeed main.py \
+srun torchrun --nproc_per_node=8 \
+   --nnodes=4 \
+   --rdzv_id=$SLURM_JOB_ID \
+   --rdzv_backend=c10d \
+   --rdzv_endpoint=$RDV_ADDR \
+    main.py \
+   --multinode \
    --data_path Dahoas/rm-static  Dahoas/full-hh-rlhf yitingxie/rlhf-reward-datasets openai/webgpt_comparisons stanfordnlp/SHP   \
    --data_split 2,4,4 \
    --model_name_or_path /mnt/petrelfs/wangzerui/DeepSpeed/DeepSpeedExamples/applications/DeepSpeed-Chat/llama_model/7132k \

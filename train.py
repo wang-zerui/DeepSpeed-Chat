@@ -72,7 +72,7 @@ def parse_args():
         "--reward-model",
         type=str,
         default="13b",
-        choices=("13b"),
+        choices=("13b", "350m"),
     )
     parser.add_argument(
         "--actor-zero-stage",
@@ -176,7 +176,10 @@ def get_cmd(args, step_num):
         verify_model(args, 2)  # Verify step 2 model exists
         s1_dir, s1_zs = get_output_dir(args, 1), get_zero_stage(args, 1)
         s2_dir, s2_zs = get_output_dir(args, 2), get_zero_stage(args, 2)
-        cmd = f"bash {script} {s1_dir} {s2_dir} '{s1_zs}' '{s2_zs}' {output_dir}"
+        if args.num_gpus > 8:
+            cmd = f"sbatch {script} {s1_dir} {s2_dir} '{s1_zs}' '{s2_zs}' {output_dir}"
+        else:
+            cmd = f"bash {script} {s1_dir} {s2_dir} '{s1_zs}' '{s2_zs}' {output_dir}"
 
     return cmd
 

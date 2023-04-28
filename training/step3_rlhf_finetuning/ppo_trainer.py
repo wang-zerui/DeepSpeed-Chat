@@ -8,7 +8,7 @@ import sys
 import os
 import deepspeed
 from deepspeed.runtime.zero.partition_parameters import ZeroParamStatus
-
+from transformers import GenerationConfig
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
@@ -69,8 +69,10 @@ class DeepSpeedPPOTrainer():
 
         max_min_length = self.max_answer_seq_len + prompts.shape[1]
 
+        # generation_config = GenerationConfig.from_pretrained('/mnt/petrelfs/wangzerui/DeepSpeed/DeepSpeedExamples/applications/DeepSpeed-Chat/llama_model/7132k')
         with torch.no_grad():
-            seq = self.actor_model.module.generate(prompts,
+            seq = self.actor_model.module.generate(prompts, 
+                                                #    generation_config=generation_config,
                                                    max_length=max_min_length,
                                                    min_length=max_min_length)
 

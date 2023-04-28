@@ -5,3 +5,6 @@ output
 .vscode
 .ipynb*
 **__pycache__**
+DeepSpeed-Chat
+llama_rlhf.sh
+DeepSpeed

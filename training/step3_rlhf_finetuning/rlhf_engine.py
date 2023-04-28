@@ -68,7 +68,7 @@ class DeepSpeedRLHFEngine():
         ds_config = get_train_ds_config(
             offload=self.args.offload,
             stage=self.args.actor_zero_stage,
-            enable_hybrid_engine=self.args.enable_hybrid_engine,
+            enable_hybrid_engine=False,
             inference_tp_size=self.args.inference_tp_size,
             release_inference_cache=self.args.release_inference_cache,
             pin_parameters=(not self.args.unpin_actor_parameters),
@@ -87,7 +87,6 @@ class DeepSpeedRLHFEngine():
             model_name_or_path=actor_model_name_or_path,
             tokenizer=self.tokenizer,
             ds_config=ds_config)
-
         # LoRA
         if self.args.actor_lora_dim > 0:
             actor_model = convert_linear_layer_to_lora(
@@ -95,7 +94,6 @@ class DeepSpeedRLHFEngine():
                 self.args.actor_lora_dim)
             if self.args.only_optimize_lora:
                 actor_model = only_optimize_lora_parameters(actor_model)
-
         # Optimizer
         AdamOptimizer = DeepSpeedCPUAdam if self.args.offload else FusedAdam
         optim_params = get_optimizer_grouped_parameters(

@@ -19,12 +19,6 @@ logger = logging.getLogger(__name__)
 def parse_args():
     parser = argparse.ArgumentParser(description="Eval the finetued SFT model")
     parser.add_argument(
-        "--model_name_or_path_baseline",
-        type=str,
-        help="Path to baseline model",
-        required=True,
-    )
-    parser.add_argument(
         "--model_name_or_path_finetune",
         type=str,
         help="Path to pretrained model",
@@ -209,8 +203,7 @@ def main():
     args = parse_args()
 
     device = torch.device("cuda:0")
-    config = AutoConfig.from_pretrained(args.model_name_or_path_baseline)
-    tokenizer = LlamaTokenizer.from_pretrained(args.model_name_or_path_baseline)
+    tokenizer = LlamaTokenizer.from_pretrained(args.model_name_or_path_finetune)
     tokenizer.pad_token = tokenizer.eos_token
 
     # model_baseline = get_model(config, args.model_name_or_path_baseline,
@@ -238,7 +231,7 @@ def main():
         prompts = [
             "Human: 请用几句话介绍一下微软? Assistant:",
             "Human: 用几句话向6岁的孩子解释登月。 Assistant:",
-            "Human: 写一首关于一只聪明的青蛙的短诗。 Assistant:",
+            "Human: 写一首关于一只聪明的臭猪的短诗。 Assistant:",
             "Human: 谁是1955年的美国总统? Assistant:", "Human: 望远镜是如何工作的? Assistant:",
             "Human: 鸟类为什么要南迁过冬? Assistant:"
         ]

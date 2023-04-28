@@ -154,6 +154,7 @@ def parse_args():
     parser.add_argument('--only_optimize_lora',
                         action='store_true',
                         help='Only optimize the LoRA parameters.')
+    parser.add_argument('--multinode', action='store_true')
     parser = deepspeed.add_config_arguments(parser)
     args = parser.parse_args()
 
@@ -168,14 +169,9 @@ def parse_args():
 
 def main():
     args = parse_args()
-    # args.world_size = int(os.environ["WORLD_SIZE"])
-    # ngpus_per_node = torch.cuda.device_count()
-    
-    # args.rank = int(os.environ['SLURM_PROCID'])
-    # print(args.rank)
-    # torch.distributed.init_process_group(backend='nccl', init_method='env://',
-    #                             world_size=args.world_size, rank=args.rank)
-    # device = torch.device("cuda", args.rank % ngpus_per_node)
+    if args.multinode:
+        print("using multinode")
+        args.local_rank = int(os.environ['LOCAL_RANK'])
     if args.local_rank == -1:
         device = torch.device("cuda")
     else:

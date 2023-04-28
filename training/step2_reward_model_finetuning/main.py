@@ -159,6 +159,7 @@ def parse_args():
     parser.add_argument('--only_optimize_lora',
                         action='store_true',
                         help='Only optimize the LoRA parameters.')
+    parser.add_argument('--multinode', action='store_true')
     parser = deepspeed.add_config_arguments(parser)
     args = parser.parse_args()
 
@@ -173,7 +174,9 @@ def parse_args():
 
 def main():
     args = parse_args()
-
+    if args.multinode:
+        print("using multinode")
+        args.local_rank = int(os.environ['LOCAL_RANK'])
     if args.local_rank == -1:
         device = torch.device("cuda")
     else:
@@ -318,7 +321,10 @@ def main():
             outputs = rm_model(**batch, use_cache=False)
             loss = outputs["loss"]
             rm_model.backward(loss)
-            rm_model.step()
+            try:
+                rm_model.step()
+            except:
+                continue
             mean_loss += loss.item()
         print_rank_0(
             f"Epoch {epoch+1}/{args.num_train_epochs} with loss {mean_loss/(step+1)}",
